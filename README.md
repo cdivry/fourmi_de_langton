@@ -5,10 +5,11 @@
 
 La fourmi de Langton est un automate cellulaire bidimensionnel comportant un jeu de règles très simples. On lui a donné le nom de Christopher Langton, son inventeur. 
 
-
+<p align="center">
 ![Fourmi de Langton](https://raw.githubusercontent.com/cdivry/fourmi_de_langton/master/img/illustration.png)
-*Fourmi de Langton sur une grille initialement vide après plus de 10000 étapes. En bas, on peut voir le début de la « route ». Le pixel rouge montre la position de la fourmi.*
 
+*Fourmi de Langton sur une grille initialement vide après plus de 10000 étapes. En haut, on peut voir le début de la « route ». Le pixel rouge montre la position de la fourmi.*
+</p>
 
 
 ## Règles
