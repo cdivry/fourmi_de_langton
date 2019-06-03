@@ -31,12 +31,12 @@ var ctx = canvas.getContext('2d');
 */
 
 // global stuff reduce to memory usage (better perfs than evaluated conditions)
+var ANT = {x: 32, y: 32, dir: 'right'};
+var MAP_SIZE = 64;
 var PAUSE = false;
 const FPS = 30;
 var ITERATIONS = 0;
 var PLAYGROUND_SIZE = 768;
-var MAP_SIZE = 96;
-var ANT = {x: 48, y: 64, dir: 'left'};
 
 const MOVE = {
 	'top': { // is turned to top
@@ -136,6 +136,10 @@ var ROTATE = {
 	},
 };
 
+/*
+** FUNCTIONS
+*/
+
 function get_tile(x, y) {
 	return (MAP[ANT.x + (MAP_SIZE * ANT.y)]);
 }
@@ -144,15 +148,35 @@ function set_tile(x, y, value) {
 	MAP[ANT.x + (MAP_SIZE * ANT.y)] = value;
 }
 
-function is_inside_map()
+function is_inside_map(x, y)
 {
-	return (MAP[ANT.x + (MAP_SIZE * ANT.y)] === 'undefined' ? false : true);
+	return (get_tile(x, y) === 'undefined' ? false : true);
 }
 
-function move_ANT(ANT, tile_value) {
-	ANT.x += MOVE[ANT.dir][tile_value].x;
-	ANT.y += MOVE[ANT.dir][tile_value].y;
-	ANT.dir = MOVE[ANT.dir][tile_value].dir;
+function prevent_border_with_pause()
+{
+	var tile = MAP[ANT.x + ( MAP_SIZE * ANT.y)];
+	if (!is_inside_map(ANT.x + MOVE[ANT.dir][tile].x, ANT.x + MOVE[ANT.dir][tile].y)) {
+		PAUSE = true;
+	}
+	if (ANT.dir == 'top' && ANT.y - 1 < 0) {
+		PAUSE = true;
+	}
+	if (ANT.dir == 'bottom' && ANT.y + 1 >= MAP_SIZE) {
+		PAUSE = true;
+	}
+	if (ANT.dir == 'right' && ANT.x + 1 >= MAP_SIZE) {
+		PAUSE = true;
+	}
+	if (ANT.dir == 'left' && ANT.x - 1 < 0) {
+		PAUSE = true;
+	}
+}
+
+function move_ant(ant, tile_value) {
+	ANT.x += MOVE[ant.dir][tile_value].x;
+	ANT.y += MOVE[ant.dir][tile_value].y;
+	ANT.dir = MOVE[ant.dir][tile_value].dir;
 	return (ANT);
 }
 
@@ -229,16 +253,22 @@ function draw_loop() {
 	draw_infos();
 }
 
-function game_loop(ANT) {
-	if (!PAUSE) {
-		var tile_value = get_tile(ANT.x, ANT.y);
-		set_tile(ANT.x, ANT.y, tile_value ? 0 : 1);
-		ANT = move_ANT(ANT, tile_value);
+/*
+** LOOPS
+*/
+
+function game_loop(ant) {
+	if (PAUSE === false) {
+		var tile_value = get_tile(ant.x, ant.y);
+		set_tile(ant.x, ant.y, tile_value ? 0 : 1);
+		ant = move_ant(ant, tile_value);
 		ITERATIONS++;
-		return (ANT);
 	}
+	return (ant);
 }
+
 function main_loop() {
+	prevent_border_with_pause();
 	ANT = game_loop(ANT);
 	//console.log(x)
 }
@@ -253,7 +283,7 @@ function main_loop() {
 */
 
 //window.setInterval(draw_loop, 1000 / FPS);
-window.setInterval(main_loop, 10);
+window.setInterval(main_loop, 5);
 window.setInterval(draw_loop, 100);
 
 // draw only once
